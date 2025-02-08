@@ -2,20 +2,20 @@ import { Schema, model } from "mongoose";
 const userSchema = new Schema({
   email: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
   username: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
-    min: 6,
-    max: 12,
+    minlength: 6,
+    maxlength: 12,
   },
   password: {
     type: String,
-    require: true,
-    min: 6,
+    required: true,
+    minlength: 6,
     select:false,
   },
   profilePic:{

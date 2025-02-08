@@ -15,4 +15,23 @@ const updateProfilePicture=async(req,res)=>{
       return res.status(statusCode.serverError).json({msg:"something went wrong"});
    }
 }
-export {updateProfilePicture}
+const checkAuth=async(req,res)=>{
+   try{
+      if(req.user){
+         return res.status(statusCode.success).json(req.user)
+      }
+      throw new Error("No authorized User")
+   }catch(err){
+      return res.status(statusCode.serverError).json({msg:err.message || "something went wrong"})
+   }
+}
+const getUsers=async(req,res)=>{
+   try{
+     const {_id : loggedUser}=req.user;
+     const filteredUsers=await User.find({_id:{$ne:loggedUser}})
+     return res.status(statusCode.success).json(loggedUser)
+   }catch(err){
+     return res.status(statusCode.serverError).json({msg:"something went wrong"})
+   }
+}
+export {updateProfilePicture,checkAuth,getUsers}
