@@ -1,1 +1,27 @@
 @import "tailwindcss";
+@plugin "daisyui";
+:root {
+    box-sizing: border-box;
+    margin: 0;
+    border: 0;
+}
+/* Apply styles globally */
+.scrollbar::-webkit-scrollbar {
+    width: 8px; /* Adjust scrollbar width */
+  }
+  
+  .scrollbar::-webkit-scrollbar-track {
+    background: #f3f4f6; /* Light gray track */
+    border-radius: 10px;
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #4a5568; /* Dark gray thumb */
+    border-radius: 10px;
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #2d3748; /* Darker thumb on hover */
+  }
+  
+

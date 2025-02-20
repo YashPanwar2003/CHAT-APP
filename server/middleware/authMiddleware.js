@@ -1,7 +1,7 @@
 import statusCode from "../utils/statusCode.js";
 import { verifyToken } from "../utils/jwtUtils.js";
 import User from "../model/user.model.js";
-import { decode } from "jsonwebtoken";
+
 
 const protectRoute = async (req, res, next) => {
   try {

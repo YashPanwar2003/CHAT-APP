@@ -7,6 +7,12 @@ import {app,httpServer,io} from "./sockets/socket.js"
 import {authRouter} from "./routes/authRoutes.js"
 import protectRoute from "./middleware/authMiddleware.js"
 import { userRouter } from "./routes/userRoutes.js"
+import cors from "cors"
+app.use(cors({
+    origin:"http://localhost:5173",
+    methods:["GET","POST","PUT"],
+    credentials:true,
+}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(cookieParser())
