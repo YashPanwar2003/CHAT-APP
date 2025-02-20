@@ -29,7 +29,7 @@ const getUsers=async(req,res)=>{
    try{
      const {_id : loggedUser}=req.user;
      const filteredUsers=await User.find({_id:{$ne:loggedUser}})
-     return res.status(statusCode.success).json(loggedUser)
+     return res.status(statusCode.success).json(filteredUsers)
    }catch(err){
      return res.status(statusCode.serverError).json({msg:"something went wrong"})
    }
