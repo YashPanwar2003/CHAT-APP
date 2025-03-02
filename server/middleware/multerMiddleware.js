@@ -1,19 +1,27 @@
-import multer from "multer";
-import path from "path"
+import multer from "multer"
+import path, { basename, extname } from "path"
 import fs from "fs"
 const folderName="uploads"
 const folderPath=path.resolve(process.cwd(),folderName)
-const multerStorage=multer.diskStorage({
-    destination:async (req,file,cb)=>{
+
+const storage=multer.diskStorage({
+    destination:async(req,file,cb)=>{
        if(!fs.existsSync(folderPath)){
-        fs.mkdirSync(folderPath,{recursive:true})
+          fs.mkdirSync(folderPath,{recursive:true})
        }
-       cb(null,folderPath);
+       cb(null,folderPath)
     },
-    filename:(req,file,cb)=>{
-        const prefix=req.user?._id;
-        cb(null,file.fieldname+" "+prefix)
-    }
+    filename:async (req,file,cb)=>{
+        if(!file.originalname){
+            cb(new Error("file must have a name"))
+            return;
+        }
+          const extName=path.extname(file.originalname).toString()
+          const baseName=path.basename(file.originalname,extName).toString()
+          const uniqueName=`${baseName}-${req.user?.username}${extName}`
+          cb(null,uniqueName)
+    } 
 })
-const upload=multer({storage:multerStorage})
-export default upload;
+export const upload=multer({storage,limits:{
+    fileSize:2*1024*1024,
+}})

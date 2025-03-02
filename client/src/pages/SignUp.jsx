@@ -19,7 +19,6 @@ export default function SignUp() {
 
     }
     fetch().then(user=>{
-      setAuthUser(user);
       navigate("/chat")
     }).catch(arg=>console.log(arg));
      
@@ -27,7 +26,7 @@ export default function SignUp() {
   },[])
 
   return (
-    <main className="h-screen w-screen flex justify-center bg-gradient-to-b from-indigo-500 to-indigo-800 items-center ">
+    <main className="h-screen w-screen flex justify-center bg-gradient-to-b from-sky-400 to-blue-800 items-center ">
       <div className="h-3/4 w-3/5 bg-slate-800  rounded-2xl flex flex-col justify-center lg:grid lg:grid-cols-2 shadow-[4px_4px_25px_rgba(0,0,0,0.5)] ">
         <div className="flex justify-center items-center flex-col gap-4 ">
           <Form/>

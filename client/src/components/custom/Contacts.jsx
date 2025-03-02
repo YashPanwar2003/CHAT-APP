@@ -29,9 +29,9 @@ const Contacts = ({ user, search, setSearch }) => {
     return (
         <div ref={ref} onClick={() => handleSelect(user)}
             
-            className={`h-[20%] w-full flex justify-start items-center gap-3 text-white ${user.username !== selectedUser?.username ? hoverProps : ""} transition-all duration-100 p-3 cursor-pointer active:bg-slate-500 ${selectedUser?.email === user.email ? selectedProps : ""}`} 
+            className={`h-[20%] w-full flex justify-start overflow-x-clip items-center gap-3 text-white ${user.username !== selectedUser?.username ? hoverProps : ""} transition-all duration-100 p-3 cursor-pointer active:bg-slate-500 ${selectedUser?.email === user.email ? selectedProps : ""}`} 
             key={user.email}>
-            <img src={user.profilePic} alt="" className="h-10 w-10 object-cover rounded-full bg-cover" />
+            <img src={user.profilePic || "/assets/placeholder.jpg"} alt="" className="h-10 w-10 object-cover rounded-full bg-cover" />
             <h4 className="text-sm sm:hidden md:block">{user.username}</h4>
         </div>
     )

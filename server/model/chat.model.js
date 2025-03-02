@@ -1,4 +1,4 @@
-import mongoose, {Mongoose, Schema,model} from "mongoose"
+import  {mongoose, Schema,model} from "mongoose"
 const messageSchema=new Schema({
     senderId:{
       type:mongoose.Schema.Types.ObjectId,
@@ -12,7 +12,6 @@ const messageSchema=new Schema({
     },
     text:{
         type:String,
-        minlength:1,
         default:"",
     },
     file:{

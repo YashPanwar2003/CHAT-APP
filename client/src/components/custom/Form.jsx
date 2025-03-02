@@ -78,7 +78,7 @@ const Form = () => {
     }
     ]
     return (
-        <form onSubmit={handleSubmit}  className="flex justify-center items-center flex-col gap-4 w-full">
+        <form onSubmit={handleSubmit} autoComplete='off'  className="flex justify-center items-center flex-col gap-4 w-full">
             {
                 inputFields.map((val) => (
 
@@ -95,9 +95,7 @@ const Form = () => {
             </button>
             <div>
                 <h4 className='text-white text-sm opacity-50 text-center'>
-                Already have an account? <span className='text-sm text-blue-400 hover:text-violet-500 transition-all duration-150'>
-                   <Link to="/login"> Login</Link>
-                </span>
+               <Link to="/login"> Already have an account? </Link>
                 </h4></div>
             <ToastContainer />
         </form>
