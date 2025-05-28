@@ -1,21 +1,20 @@
 import { create } from "zustand"
 import { io } from "socket.io-client"
 import useChatStore from "./chatStore"
+const BASE_URL=import.meta.env.MODE==="development"? import.meta.env.VITE_DOMAIN_NAME : "/"
 const useAuthStore = create((set, get) => ({
    authUser: null,
    setAuthUser: (arg) => {
       set({ authUser: arg })
-      console.log(get().authUser)
    },
    socket: null,
    initSocket: (callback) => {
       if (!get().socket) {
-         const {authUser}=get()
-         if(!authUser){
-            console.log("user not found ") 
+         const { authUser } = get()
+         if (!authUser) {
             return;
          }
-         const newSocket =  io(import.meta.env.VITE_DOMAIN_NAME,
+         const newSocket = io(BASE_URL,
             {
                withCredentials: true,
                autoConnect: false,
@@ -28,42 +27,51 @@ const useAuthStore = create((set, get) => ({
                }
             }
          )
-         set({socket:newSocket})
-         
-         if(!newSocket.connected){
+         set({ socket: newSocket })
+
+         if (!newSocket.connected) {
             newSocket.connect(get().authUser)
-        }
-        newSocket.removeAllListeners();
-        newSocket.on("connect",callback)
-        newSocket.on("userConnect",(user)=>{
-         const {users,addMessage}=useChatStore.getState()
-          const userExist=users.find(val=>{
-            return val.email===user.email
-          })
-          if(userExist) return;
-          addMessage(user)
+         }
+         newSocket.removeAllListeners();
+         newSocket.on("connect", callback)
+         newSocket.on("userConnect",(userMap)=>{
+           const onlineUsersMap=new Map(userMap)
+           const {setOnlineUsers}= useChatStore.getState()
           
-        })
-        newSocket.on("error",()=>{
-         console.log(error.message)
-        })
-        
-        newSocket.on("message",(data)=>{
-         const {addMessage,selectedUser}=useChatStore.getState()
-         if(selectedUser?._id===data.senderId || selectedUser?._id===data.receiverId){
-            console.log("a message")
-            addMessage(data)
-          }
-          
-        })
+           setOnlineUsers(onlineUsersMap)
+         })
+         newSocket.on("newUserJoined", (userObject) => {
+            const {addUser}=useChatStore.getState()
+            addUser(userObject)
+
+         })
+         newSocket.on("error", () => {
+            console.log(err.message)
+         })
+
+         newSocket.on("message", (data) => {
+            const { addMessage, selectedUser } = useChatStore.getState()
+            if (selectedUser?._id === data.senderId || selectedUser?._id === data.receiverId) {
+
+               addMessage(data)
+            }
+
+         })
+         newSocket.on("userDisconnect",(userMap)=>{
+            const onlineUsersMap=new Map(userMap)
+            const {setOnlineUsers}=useChatStore.getState()
+            setOnlineUsers(onlineUsersMap)
+           
+            
+         })
       }
    },
-   disSocket:()=>{
-      const socket=get().socket
-      if( socket?.connected){
+   disSocket: () => {
+      const socket = get().socket
+      if (socket?.connected) {
          socket.disconnect()
       }
-      set({socket:null})
+      set({ socket: null })
    }
 
 }))

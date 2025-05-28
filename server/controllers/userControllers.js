@@ -1,28 +1,34 @@
-import {uploadToCloudinary,deleteProfile}from "../utils/cloudinary.js";
+import { uploadToCloudinary, deleteProfile } from "../utils/cloudinary.js";
 import statusCode from "../utils/statusCode.js"
 import User from "../model/user.model.js"
 import Chat from "../model/chat.model.js";
+import mongoose from "mongoose";
+import { profile } from "console";
 const updateProfilePicture = async (req, res) => {
    try {
       if (!req.file) {
          return res.status(statusCode.invalid).json({ msg: "provide a profile picture" })
       }
       const filePath = req.file.path;
-      console.log(filePath)
-      const { _id,profilePic } = req.user;
-      if(profilePic!==""){
-         const deleteResponse=await deleteProfile(profilePic);
-         if(deleteResponse?.result==="ok"){
-            console.log("image deleted")
-            await User.findByIdAndUpdate(_id,{profilePic:""})
+
+      const { _id, profilePic } = req.user;
+      let pfResponse=profile
+      if (profilePic !== "") {
+         const deleteResponse = await deleteProfile(profilePic);
+         
+         if (deleteResponse?.result !== "ok") {
+
+            return res.json({msg:"Unable to delete the file"})
          }
+        
       }
       const uploadResponse = await uploadToCloudinary(filePath);
-      const updateUser = await User.findByIdAndUpdate(_id, { profilePic: uploadResponse.secure_url }, { new: true })
+      pfResponse=uploadResponse.secure_url
+      const updateUser = await User.findByIdAndUpdate(_id, { profilePic: pfResponse}, { new: true })
       return res.status(statusCode.success).json({ updateUser })
    } catch (err) {
-      console.log(err)
-      return res.status(statusCode.serverError).json({ msg:err.message });
+
+      return res.status(statusCode.serverError).json({ msg: err.message });
    }
 }
 const checkAuth = async (req, res) => {
@@ -56,7 +62,7 @@ const saveMessage = async (data) => {
       await chat.save()
       return chat
    } catch (err) {
-      console.log(err)
+
       return undefined
    }
 }
@@ -72,4 +78,21 @@ const getMessages = async (req, res) => {
       return res.status(statusCode.serverError).json({ msg: "Something went wrong" })
    }
 }
-export { updateProfilePicture, checkAuth, getUsers, saveMessage, getMessages }
+const deleteUser = async (req, res) => {
+   try {
+      const userId = req.params.id
+      const objectId = new mongoose.Types.ObjectId(userId)
+      const deleteChats = await Chat.deleteMany({ participants: objectId })
+      const deleteUser = await User.findByIdAndDelete(userId)
+      const deleteProfilePic= await deleteProfile(deleteUser.profilePic)
+      if (!!deleteUser && !!deleteChats && !!deleteProfilePic) {
+         return res.status(statusCode.success).cookie("jwt", null).json({ result: true, msg: "Account is Deleted" })
+      } else {
+         throw new Error("Internal Error")
+      }
+   } catch (err) {
+      console.log(err)
+      return res.status(statusCode.serverError).json({ result: false, msg: err.message || "Something went wrong" })
+   }
+}
+export { updateProfilePicture, checkAuth, getUsers, saveMessage, getMessages, deleteUser }

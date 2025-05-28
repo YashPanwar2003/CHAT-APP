@@ -6,6 +6,7 @@ const useChatStore = create((set,get) => ({
     gettingUsers: false,
     gettingMessages: false,
     messages: [],
+    onlineUsers:null,
     setSelectedUser: (arg) => set({ selectedUser: arg }),
     setUsers:(arg)=>set({users:[...arg]}),
     addUser:(arg)=>set({users:[...get().users,arg]}),
@@ -13,9 +14,11 @@ const useChatStore = create((set,get) => ({
     setGettingMessages: (arg) => set({ gettingMessages: arg }),
     setMessages: (arg) => set({messages:[...arg]}),
     addMessage: (arg) => {
-        console.log(get().messages)
-        set({messages:[arg,...get().messages]})
+       
+        set({messages:[...get().messages,arg]})
     },
+    setOnlineUsers:(arg)=>set({onlineUsers:arg}),
+   
 
 }));
 export default useChatStore

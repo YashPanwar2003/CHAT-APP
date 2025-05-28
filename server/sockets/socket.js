@@ -14,28 +14,35 @@ const io = new Server(httpServer, {
     }
 })
 const onlineUsers = new Map()
-io.on("connection", async (socket) => {
-
+io.on("connection", async (socket) =>{
     const { userId } = socket.handshake.query
     onlineUsers.set(userId,socket.id)
-    const userFind=await User.findById(userId).lean()
-    io.emit("userConnect",userFind)
-    socket.on("message", async (data) => {
-        console.log(data)
+    io.emit("userConnect",Array.from(onlineUsers.entries()))
+    socket.on("message", async (data,callback) => {
+        
         const { receiverId } = data
-        const chatResult = await saveMessage(data);
-        console.log(chatResult)
-        if (!chatResult) return;
+        try{
+           const findReceiver= await User.findById(receiverId)
+           if(!findReceiver) return callback({status:"error",msg:"User doesn't exist anymore"})
+
+        }catch(err){
+            console.log(err)
+        }
+       const chatResult=await saveMessage(data)
+        if(chatResult) callback({status:"ok",msg:"Message sent"})
         const receiverSocketId=onlineUsers.get(receiverId)
         if (receiverSocketId){
             io.to(receiverSocketId).emit("message",data)
         }
-    })
-    socket.on("disconnect",(data)=>{
-        console.log("user disconnected")
+    }) 
+    socket.on("disconnect",()=>{
+        
         const {userId}=socket.handshake.query
-        onlineUsers.delete(userId)
-        console.log(onlineUsers)
+        const deletedUser=onlineUsers.delete(userId)
+        if(deletedUser) {
+            io.emit("userDisconnect",Array.from(onlineUsers.entries()))
+        }
+       
     })
 
 })

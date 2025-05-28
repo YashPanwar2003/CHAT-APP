@@ -13,7 +13,6 @@ const compareHash=async(password,hashedPassword)=>{
       const result=await bcrypt.compare(password,hashedPassword)
       return result;
    }catch(err){
-     console.log("comparehash function")
      throw err;
    }
 }

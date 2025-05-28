@@ -1,6 +1,6 @@
 import apiService from "../lib/axios";
 const userCheck=async()=>{
-    const result=await apiService.get("/user/check");
-    return result;
+    return await apiService.get("/user/check");
+   
 }
 export default userCheck

@@ -14,7 +14,7 @@ const protectRoute = async (req, res, next) => {
     }
     
     const decoded = verifyToken(token);
-    console.log(decoded)
+    
     if(!decoded) return res.status(statusCode.invalid).json({msg:"Unauthorized - An invalid token"})
     const user = await User.findById(decoded.userId).lean();
     if (!user)
@@ -24,7 +24,7 @@ const protectRoute = async (req, res, next) => {
     
     next();
   } catch (err) {
-    console.log("error  name : " + err.message);
+    
     return res
       .status(statusCode.unauthorized)
       .json({ msg: "user unauthorized" });

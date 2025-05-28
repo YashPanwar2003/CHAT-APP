@@ -1,12 +1,13 @@
 import useAuthStore from "../../store/authStore"
 import { Camera } from "lucide-react"
-import placeholder from "../../../public/assets/placeholder.jpg"
+import placeholder from "/assets/placeholder.jpg"
 import apiService from "../../lib/axios"
 import { useTransition } from "react"
 import UserDetails from "./UserDetails"
-import Logout from "./Logout"
-import { toast } from "react-toastify"
+import toastOptions from "../../utils/toastOptions"
+import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/ReactToastify.css"
+import Spinner from "../ui/Spinner"
 const Profile = () => {
     const { authUser, setAuthUser } = useAuthStore()
     const [updatingProfile, setTransition] = useTransition(false)
@@ -26,14 +27,7 @@ const Profile = () => {
                     setAuthUser(updateUser)
                 }
             } catch (err) {
-                console.log(err)
-                toast.error(err?.message, {
-                    theme: "dark",
-                    autoClose: 3000,
-                    closeOnClick: true,
-                    closeButton: false,
-                    pauseOnHover: false,
-                })
+                toast.error(err.response?.data?.msg,{...toastOptions,toastId:err.response?.data?.msg})
             } finally {
                 e.target.value = ""
             }
@@ -42,9 +36,9 @@ const Profile = () => {
     }
     return (
         <div
-            className="h-full w-full flex flex-col justify-start items-center space-y-3"
+            className="h-full w-full flex flex-col justify-start overflow-hidden items-center space-y-3"
         >
-            <h1 className="text-center font-bold text-2xl">Profile</h1>
+            <h1 className="text-center font-bold text-2xl mb-10">Profile</h1>
             <div
                 className="h-[150px] w-[150px] space-y-4 relative rounded-full bg-cover object-cover bg-white outline-gray-500 outline-4"
             >
@@ -53,8 +47,13 @@ const Profile = () => {
                     alt=""
                     className="rounded-full h-full w-full bg-cover object-cover"
                 />
+                {
+                    updatingProfile && <div className="h-full w-full rounded-full absolute flex inset-0 z-10 justify-center backdrop-blur-lg items-center">
+                        <Spinner className="z-50" />
+                    </div>
+                }
                 <label htmlFor="file-input"
-                    className="border-white border-2 bottom-1 right-1 h-10 w-10 rounded-full cursor-pointer absolute text-black"
+                    className="border-white border-2 bottom-1 right-1 h-10 w-10 rounded-full cursor-pointer absolute text-black z-50"
                 >
                     <input
                         type="file"
@@ -76,9 +75,9 @@ const Profile = () => {
             <h6
                 className="text-white font-medium capitalize text-center"
             >
-                {updatingProfile ? "updating...." : "Select picture to update"}
             </h6>
             <UserDetails authUser={authUser} />
+            <ToastContainer limit={1}/>
         </div>
     )
 }

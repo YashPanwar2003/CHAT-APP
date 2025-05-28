@@ -1,4 +1,5 @@
-const validateForm = ({ username, email, password }) => {
+const validateForm = ({ username="NotLoggedUser", email, password }) => {
+    
     if(!username || !email || !password){
         return {result:false, msg:"All fields are required"}
     }

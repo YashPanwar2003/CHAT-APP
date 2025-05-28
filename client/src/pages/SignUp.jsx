@@ -1,40 +1,30 @@
-import Form from "../components/custom/Form";
+import SignUpForm from "../components/custom/SignUpForm";
 import { useEffect } from "react";
-import useAuthStore from "../store/authStore";
 import userCheck from "../services/userCheck";
 import { useNavigate } from "react-router-dom";
+import Card from "../components/custom/AuthCard";
 //signup functionalities are almost done
 export default function SignUp() {
 
-  const {setAuthUser,authUser}=useAuthStore()
   const navigate=useNavigate()
   useEffect(()=>{
-    async function fetch(){
-      const result=await userCheck();
-      const statusCodes=[400,401,402,500];
-      if(statusCodes.includes(result.status)){
-        throw new Error(result.statusText)
+   const checkAuth=async ()=>{
+      try {
+        await userCheck();
+        navigate("/chat")
+      } catch (err) {
+       if(err.response?.status===401){
+         console.log("User unauthorized")
+       }else 
+          console.log(err.response?.data?.msg)
       }
-      return result.data;
-
+    
     }
-    fetch().then(user=>{
-      navigate("/chat")
-    }).catch(arg=>console.log(arg));
-     
+    checkAuth().catch(err=>console.log("Unhandled Error : "+err.message))
 
   },[])
 
   return (
-    <main className="h-screen w-screen flex justify-center bg-gradient-to-b from-sky-400 to-blue-800 items-center ">
-      <div className="h-3/4 w-3/5 bg-slate-800  rounded-2xl flex flex-col justify-center lg:grid lg:grid-cols-2 shadow-[4px_4px_25px_rgba(0,0,0,0.5)] ">
-        <div className="flex justify-center items-center flex-col gap-4 ">
-          <Form/>
-        </div>
-        <div>
-          
-        </div>
-      </div>
-    </main>
+      <Card AuthForm={SignUpForm}/>
   );
 }
